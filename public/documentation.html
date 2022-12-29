@@ -12,8 +12,10 @@
         <thead>
             <tr>
                 <td>Request</td>
-                <td>URL</td>
+                <td>Endpoint</td>
                 <td>HTTP Method</td>
+                <td>Request Params</td>
+                <td>Response</td>
             </tr>
         </thead>
         <tbody>
@@ -21,41 +23,73 @@
                 <td>Return a list of ALL movies</td>
                 <td>/movies</td>
                 <td>GET</td>
+                <td>N/A</td>
+                <td>Return JSON Format of all infomation back</td>
             </tr>
             <tr>
                 <td>Return data of a single movie by title</td>
-                <td>/movies/:title</td>
+                <td>/movies/:Title</td>
                 <td>GET</td>
+                <td>N/A</td>
+                <td>Return JSON Format of a movie</td>
             </tr>
             <tr>
                 <td>Return data about a genre by title</td>
-                <td>/movies/genre/:genreName</td>
+                <td>/genres/:Name</td>
                 <td>GET</td>
+                <td>N/A</td>
+                <td>Return JSON Format of a genre</td>
             </tr>
             <tr>
                 <td>Return data about a director</td>
-                <td>/movies/director/:directorName</td>
+                <td>/directors/:Name</td>
                 <td>GET</td>
+                <td>N/A</td>
+                <td>Return JSON Format of a director</td>
             </tr>
             <tr>
                 <td>Add new users</td>
                 <td>/users</td>
                 <td>POST</td>
+                <td>
+                  <ul>
+                    <li>Name : Type = String </li>
+                    <li>Username : Type = String</li>
+                    <li>Password : Type = String</li>
+                    <li>Email : Type = Email</li>
+                    <li>DateOfBirth : Date</li>
+                  </ul>
+                </td>
+                <td>Return a new user infomation in JSON format</td>
             </tr>
             <tr>
                 <td>Update user's info</td>
-                <td>/users/:id</td>
+                <td>/users/:Username</td>
                 <td>PUT</td>
+                <td>
+                  <ul>
+                    <li>Name : Type = String </li>
+                    <li>Username : Type = String</li>
+                    <li>Password : Type = String</li>
+                    <li>Email : Type = Email</li>
+                    <li>DateOfBirth : Date</li>
+                  </ul>
+                </td>
+                <td>Return updated user's infomation in JSON format</td>
             </tr>
             <tr>
                 <td>Add a movie to favorite list </td>
-                <td>/users/:id/:favoriteMovie</td>
-                <td>PUT</td>
+                <td>/users/:Username/movies/:MovieID</td>
+                <td>POST</td>
+                <td>N/A</td>
+                <td>Return updated user's infomation in JSON format</td>
             </tr>
             <tr>
                 <td>remove a movie from favorite list</td>
-                <td>/users/:id/:favoriteMovie</td>
+                <td>/users/:Username/movies/:MovieID</td>
                 <td>DELETE</td>
+                <td>N/A</td>
+                <td>If update is succvessful, return 'Username has been deleted.'</td>
             </tr>
             <tr>
                 <td>Remove existing user</td>
