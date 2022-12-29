@@ -1,0 +1,4 @@
+{"_id":1,"Name":"Tom Cobley","Username":"TomCobley","Password":"@TomCobley","Email":"TomCobley@gmail.com","DateOfBirth":{"$date":"1992-01-01T00:00:00Z"},"FavoriteMovies":[1,6,9]}
+{"_id":2,"Name":"Joe Bloggs","Username":"JoeBloggs","Password":"@JoeBloggs","Email":"JoeBloggs@gmail.com","DateOfBirth":{"$date":"1994-05-10T00:00:00Z"},"FavoriteMovies":[3]}
+{"_id":4,"Name":"Oliver Mcdaniel","Username":"OliverMcdaniel","Password":"@OliverMcdaniel","Email":"OliverMcdaniel@gmail.com","DateOfBirth":{"$date":"1989-04-13T00:00:00Z"},"FavoriteMovies":[10,2]}
+{"_id":3,"Name":"Jane Smith","Username":"JaneSmith","Password":"@JaneSmith","Email":"JaneSmith@gmail.com","DateOfBirth":{"$date":"2000-05-16T00:00:00Z"},"FavoriteMovies":[8,4]}
