@@ -18,7 +18,10 @@ mongoose.connect('mongodb://localhost:27017/movieAPIdb',
 
 
 app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport');
 
 
 
@@ -33,15 +36,18 @@ app.get('/', (req, res) => {
 });
 
 // This will return all movies.
-app.get('/movies', (req, res) => {
+//any request to the “movies” endpoint will require a JWT from the client.
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
-  .then((movies) => {
-    res.status(201).json(movies);
-  }).catch((err) =>{
-    console.error(err);
-    res.status(500).send('Error: ' + err);
-  })
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
+
 
 
 // Return a movie by name
@@ -113,7 +119,8 @@ app.get('/users', (req, res) => {
 // Get a user by username
 app.get('/users/:Username', (req, res) => {
   Users.findOne({ Username: req.params.Username })
-    .then((user) => {
+  .then((user) => {
+      
       res.json(user);
     })
     .catch((err) => {
@@ -121,6 +128,9 @@ app.get('/users/:Username', (req, res) => {
       res.status(500).send('Error: ' + err);
     });
 });
+
+
+
 
 //Add new users
 app.post('/users', (req, res) => {
