@@ -3,7 +3,6 @@ const uuid = require('uuid');
 
 //The schema has been defined for documents in the “Movies” collection
 let movieSchema = mongoose.Schema({
-    _id: { type: String, default: uuid.v4()},
     Title: {type: String, required: true},
     Description: {type: String, required: true},
     GenreID: {type: mongoose.Schema.Types.String, ref: 'Genre'},
@@ -13,7 +12,6 @@ let movieSchema = mongoose.Schema({
 });
 
 let userSchema = mongoose.Schema({
-    _id: { type: String, default: uuid.v4()},
     Name: {type: String, required: true},
     Username: {type: String, required: true},
     Password: {type: String, required: true},
@@ -23,14 +21,12 @@ let userSchema = mongoose.Schema({
 });
 
 let directorSchema = mongoose.Schema({
-    _id: { type: String, default: uuid.v4()},
     Name: {type: String, required: true},
     Bio: String,
     DateofBirth: Date
 });
 
 let genreSchema = mongoose.Schema({
-    _id: { type: String, default: uuid.v4()},
     Name: {type: String, required: true},
     Description: {type: String, required: true}
 });
