@@ -12,6 +12,8 @@ const Users = Models.User;
 const Directors = Models.Director;
 const Genres = Models.Genre;
 
+const { check, validationResult } = require('express-validator');
+
 mongoose.connect('mongodb://localhost:27017/movieAPIdb', 
 { useNewUrlParser: true, 
   useUnifiedTopology: true });
@@ -19,6 +21,10 @@ mongoose.connect('mongodb://localhost:27017/movieAPIdb',
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const cors = require('cors');
+app.use(cors());
+
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
@@ -39,6 +45,8 @@ app.get('/', (req, res) => {
 //any request to the “movies” endpoint will require a JWT from the client.
 app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
+    .populate('GenreID')
+    .populate('DirectorID')
     .then((movies) => {
       res.status(201).json(movies);
     })
@@ -53,6 +61,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) 
 // Return a movie by name
 app.get('/movies/:Title', (req, res) => {
   Movies.findOne({ Title: req.params.Title })
+  .populate('GenreID')
   .then((movie) => {
     res.json(movie);
   }).catch((err) => {
@@ -119,6 +128,7 @@ app.get('/users', (req, res) => {
 // Get a user by username
 app.get('/users/:Username', (req, res) => {
   Users.findOne({ Username: req.params.Username })
+  .populate('FavoriteMovies')
   .then((user) => {
       
       res.json(user);
@@ -129,29 +139,106 @@ app.get('/users/:Username', (req, res) => {
     });
 });
 
+//Add new movies
+app.post('/movies', (req, res) => {
+  Movies.findOne({ Title: req.body.Title })
+  .then((title) =>{ 
+    if (title) {
+        return res.status(400).send(req.body.Title + ' already exist');
+      }else{
+        Movies.create({
+          Title: req.body.Title,
+          Description: req.body.Description,
+          GenreID: req.body.GenreID,
+          DirectorID: req.body.DirectorID,
+          ImageURL: req.body.ImageURL,
+          Featured: req.body.Featured
+        }).then((title) => {res.status(201).json(title)}).catch((error => {
+          console.error(error);
+          res.status(500).send('Error:' + error);
+        }))
+      }
+    });
+});
 
+
+//Add new Genre
+app.post('/genres', (req, res) => {
+  Genres.findOne({ Name: req.body.Name })
+  .then((name) =>{ 
+    if (name) {
+        return res.status(400).send(req.body.Name + ' already exist');
+      }else{
+        Genres.create({
+          Name: req.body.Name,
+          Description: req.body.Description
+        }).then((name) => {res.status(201).json(name)}).catch((error => {
+          console.error(error);
+          res.status(500).send('Error:' + error);
+        }))
+      }
+    });
+});
+
+//Add new Director
+app.post('/directors', (req, res) => {
+  Directors.findOne({ Name: req.body.Name })
+  .then((name) =>{ 
+    if (name) {
+        return res.status(400).send(req.body.Name + ' already exist');
+      }else{
+        Directors.create({
+          Name: req.body.Name,
+          Bio: req.body.Bio,
+          DateofBirth: req.body.DateofBirth
+        }).then((name) => {res.status(201).json(name)}).catch((error => {
+          console.error(error);
+          res.status(500).send('Error:' + error);
+        }))
+      }
+    });
+});
 
 
 //Add new users
-app.post('/users', (req, res) => {
+app.post('/users', 
+[
+  check('Username', 'Username is required.').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required.').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+
+  //Check the validation object for errors
+  let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOne({ Username: req.body.Username })
   .then((user) =>{ 
     if (user) {
-        return res.status(400).send(req.body.Username + 'already exist');
+        return res.status(400).send(req.body.Username + ' already exist');
       }else{
         Users.create({
           Name: req.body.Name,
           Username: req.body.Username,
-          Password: req.body.Password,
+          Password: hashedPassword,
           Email: req.body.Email,
-          DateofBirth: req.body.Date,
+          DateofBirth: req.body.DateofBirth,
           FavoriteMovies: req.body.FavoriteMovies
         }).then((user) => {res.status(201).json(user)}).catch((error => {
           console.error(error);
           res.status(500).send('Error:' + error);
         }))
       }
-    });
+    })
+    .catch((error => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    }));
 });
 
 // Update user's info.
@@ -162,7 +249,7 @@ app.put('/users/:Username', (req, res) => {
       Username: req.body.Username,
       Password: req.body.Password,
       Email: req.body.Email,
-      Birthday: req.body.Birthday
+      DateofBirth: req.body.DateofBirth
     }
   },
   { new: true }, // This line makes sure that the updated document is returned
@@ -172,6 +259,48 @@ app.put('/users/:Username', (req, res) => {
       res.status(500).send('Error: ' + err);
     } else {
       res.json(updatedUser);
+    }
+  });
+});
+
+// Update movies's info.
+app.put('/movies/:Title', (req, res) => {
+  Movies.findOneAndUpdate({ Title: req.params.Title }, { $set:
+    {
+      Title: req.body.Title,
+      Description: req.body.Description,
+      DirectorID: req.body.DirectorID,
+      GenreID: req.body.GenreID,
+      ImageURL: req.body.ImageURL
+    }
+  },
+  { new: true }, // This line makes sure that the updated document is returned
+  (err, updatedMovie) => {
+    if(err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    } else {
+      res.json(updatedMovie);
+    }
+  });
+});
+
+// Update director's info.
+app.put('/directors/:Name', (req, res) => {
+  Directors.findOneAndUpdate({ Name: req.params.Name }, { $set:
+    {
+      Name: req.body.Name,
+      Bio: req.body.Bio,
+      DateofBirth: req.body.DateofBirth
+    }
+  },
+  { new: true }, // This line makes sure that the updated document is returned
+  (err, updatedMovie) => {
+    if(err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    } else {
+      res.json(updatedMovie);
     }
   });
 });
@@ -225,8 +354,57 @@ app.delete('/users/:Username', (req, res) => {
   });
 });
 
+//Remove existing movie
+app.delete('/movies/:Title', (req, res) => {
+  Movies.findOneAndRemove({ Title: req.params.Title })
+  .then((title) => {
+    if(!title){
+      res.status(400).send(req.params.Title + ' was not found');
+    }else{
+      res.status(200).send(req.params.Title + ' has been deleted');
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
+
+//Remove existing genre
+app.delete('/genres/:Name', (req, res) => {
+  Genres.findOneAndRemove({ Name: req.params.Name })
+  .then((name) => {
+    if(!name){
+      res.status(400).send(req.params.Name + ' was not found');
+    }else{
+      res.status(200).send(req.params.Name + ' has been deleted');
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
+
+//Remove existing genre
+app.delete('/directors/:Name', (req, res) => {
+  Directors.findOneAndRemove({ Name: req.params.Name })
+  .then((name) => {
+    if(!name){
+      res.status(400).send(req.params.Name + ' was not found');
+    }else{
+      res.status(200).send(req.params.Name + ' has been deleted');
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
 
 
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
