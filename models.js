@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
 const uuid = require('uuid');
+const bcrypt = require('bcrypt');
+
 
 //The schema has been defined for documents in the “Movies” collection
 let movieSchema = mongoose.Schema({
     Title: {type: String, required: true},
     Description: {type: String, required: true},
-    GenreID: {type: mongoose.Schema.Types.String, ref: 'Genre'},
-    DirectorID: {type: mongoose.Schema.Types.String, ref: 'Director'},
+    GenreID: {type: mongoose.Schema.Types.ObjectID, ref: 'Genre'},
+    DirectorID: {type: mongoose.Schema.Types.ObjectID, ref: 'Director'},
     ImageURL: String,
     Featured: Boolean
 });
@@ -17,8 +19,16 @@ let userSchema = mongoose.Schema({
     Password: {type: String, required: true},
     Email: {type: String, required: true},
     DateofBirth: Date,
-    FavoriteMovies: [{type: mongoose.Schema.Types.String, ref: 'Movie' }],
+    FavoriteMovies: [{type: mongoose.Schema.Types.ObjectID, ref: 'Movie' }],
 });
+
+userSchema.statics.hashPassword = (password) => {
+    return bcrypt.hashSync(password, 10);
+};
+
+userSchema.methods.validatePassword = function (password) {
+    return bcrypt.compareSync(password, this.Password)
+}
 
 let directorSchema = mongoose.Schema({
     Name: {type: String, required: true},
