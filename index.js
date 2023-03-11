@@ -76,18 +76,6 @@ app.get('/movies/:Title', (req, res) => {
     })
 });
 
-// Return a movie by id
-app.get('/movies/:id', (req, res) => {
-  Movies.findOne({ Id: req.params.id })
-    .populate('GenreID')
-    .then((movie) => {
-      res.json(movie);
-    }).catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    })
-});
-
 // This will return all genres.
 app.get('/genres', (req, res) => {
   Genres.find()
