@@ -43,9 +43,11 @@ app.get('/', (req, res) => {
   res.send('Welcome to Movie app!!');
 });
 
+
 // This will return all movies.
 //any request to the “movies” endpoint will require a JWT from the client.
 app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+  // app.get('/movies', (req, res) => {
   Movies.find()
     .populate('GenreID')
     .populate('DirectorID')
@@ -71,6 +73,7 @@ app.get('/movies/:Title', (req, res) => {
       res.status(500).send('Error: ' + err);
     })
 });
+
 
 // This will return all genres.
 app.get('/genres', (req, res) => {
