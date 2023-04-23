@@ -197,7 +197,7 @@ app.post('/directors', (req, res) => {
         Directors.create({
           Name: req.body.Name,
           Bio: req.body.Bio,
-          DateofBirth: req.body.DateofBirth
+          Birthday: req.body.Birthday
         }).then((name) => { res.status(201).json(name) }).catch((error => {
           console.error(error);
           res.status(500).send('Error:' + error);
@@ -234,7 +234,7 @@ app.post('/users',
             Username: req.body.Username,
             Password: hashedPassword,
             Email: req.body.Email,
-            DateofBirth: req.body.DateofBirth,
+            Birthday: req.body.Birthday,
             FavoriteMovies: req.body.FavoriteMovies
           }).then((user) => { res.status(201).json(user) }).catch((error => {
             console.error(error);
@@ -258,7 +258,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
       Username: req.body.Username,
       Password: hashedPassword,
       Email: req.body.Email,
-      DateofBirth: req.body.DateofBirth
+      Birthday: req.body.Birthday
     }
   },
     { new: true }, // This line makes sure that the updated document is returned
@@ -302,7 +302,7 @@ app.put('/directors/:Name', (req, res) => {
     {
       Name: req.body.Name,
       Bio: req.body.Bio,
-      DateofBirth: req.body.DateofBirth
+      Birthday: req.body.Birthday
     }
   },
     { new: true }, // This line makes sure that the updated document is returned
