@@ -18,7 +18,7 @@ let userSchema = mongoose.Schema({
     Username: { type: String, required: true },
     Password: { type: String, required: true },
     Email: { type: String, required: true },
-    Birthday: new Date(),
+    Birthday: Date,
     FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectID, ref: 'Movie' }],
 });
 
@@ -33,7 +33,7 @@ userSchema.methods.validatePassword = function (password) {
 let directorSchema = mongoose.Schema({
     Name: { type: String, required: true },
     Bio: String,
-    Birthday: new Date()
+    Birthday: Date
 });
 
 let genreSchema = mongoose.Schema({
