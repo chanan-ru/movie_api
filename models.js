@@ -5,21 +5,21 @@ const bcrypt = require('bcrypt');
 
 //The schema has been defined for documents in the “Movies” collection
 let movieSchema = mongoose.Schema({
-    Title: {type: String, required: true},
-    Description: {type: String, required: true},
-    GenreID: {type: mongoose.Schema.Types.ObjectID, ref: 'Genre'},
-    DirectorID: {type: mongoose.Schema.Types.ObjectID, ref: 'Director'},
+    Title: { type: String, required: true },
+    Description: { type: String, required: true },
+    GenreID: { type: mongoose.Schema.Types.ObjectID, ref: 'Genre' },
+    DirectorID: { type: mongoose.Schema.Types.ObjectID, ref: 'Director' },
     ImageURL: String,
     Featured: Boolean
 });
 
 let userSchema = mongoose.Schema({
-    Name: {type: String, required: true},
-    Username: {type: String, required: true},
-    Password: {type: String, required: true},
-    Email: {type: String, required: true},
-    DateofBirth: Date,
-    FavoriteMovies: [{type: mongoose.Schema.Types.ObjectID, ref: 'Movie' }],
+    Name: { type: String, required: true },
+    Username: { type: String, required: true },
+    Password: { type: String, required: true },
+    Email: { type: String, required: true },
+    Birthday: new Date(),
+    FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectID, ref: 'Movie' }],
 });
 
 userSchema.statics.hashPassword = (password) => {
@@ -31,14 +31,14 @@ userSchema.methods.validatePassword = function (password) {
 }
 
 let directorSchema = mongoose.Schema({
-    Name: {type: String, required: true},
+    Name: { type: String, required: true },
     Bio: String,
-    DateofBirth: Date
+    Birthday: new Date()
 });
 
 let genreSchema = mongoose.Schema({
-    Name: {type: String, required: true},
-    Description: {type: String, required: true}
+    Name: { type: String, required: true },
+    Description: { type: String, required: true }
 });
 
 // This will create collections called “db.movies”, “db.users”, "db.directors", and "db.genre".
